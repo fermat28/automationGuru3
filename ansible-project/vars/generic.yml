@@ -1,5 +1,0 @@
----
-
-domain: fermat-stream.devops.intuitivesoft.cloud
-rtmp_server_ip: 172.16.1.21
-backend_subnet_cidr: 172.16.2.0/24

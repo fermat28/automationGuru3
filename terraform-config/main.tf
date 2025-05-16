@@ -107,7 +107,7 @@ resource "aws_vpc_security_group_egress_rule" "frontend_allow_nginx_ssl" {
 }
 
 # Frontend -  HTTP entrant pour installation packages
-resource "aws_vpc_security_group_ingress_rule" "frontend_allow_apt_ssl" {
+resource "aws_vpc_security_group_ingress_rule" "frontend_allow_apt_install" {
   security_group_id = aws_security_group.front_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 80
@@ -116,7 +116,7 @@ resource "aws_vpc_security_group_ingress_rule" "frontend_allow_apt_ssl" {
 }
 
 # Frontend - HTTP sortant pour installation packages
-resource "aws_vpc_security_group_egress_rule" "frontend_allow_apt_out_ssl" {
+resource "aws_vpc_security_group_egress_rule" "frontend_allow_apt_out_install" {
   security_group_id = aws_security_group.front_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 80
@@ -125,7 +125,7 @@ resource "aws_vpc_security_group_egress_rule" "frontend_allow_apt_out_ssl" {
 }
 
 
-# Frontend -  HTTP entrant pour installation packages sur backend
+# Frontend -  RTMP entrant 
 resource "aws_vpc_security_group_ingress_rule" "frontend_allow_apt_for_backend" {
   security_group_id = aws_security_group.front_sg.id
   cidr_ipv4         = var.subnets_cidr_block[1]
@@ -134,7 +134,7 @@ resource "aws_vpc_security_group_ingress_rule" "frontend_allow_apt_for_backend" 
   to_port           = 3128
 }
 
-# Frontend -  HTTP entrant pour installation packages sur backend
+# Frontend -  RTMP sortant
 resource "aws_vpc_security_group_egress_rule" "frontend_allow_apt_for_backend" {
   security_group_id = aws_security_group.front_sg.id
   cidr_ipv4         = var.subnets_cidr_block[0]
@@ -171,25 +171,6 @@ resource "aws_vpc_security_group_ingress_rule" "frontend_allow_rtmp_from_backend
   ip_protocol       = "tcp"
   description       = "Allow RTMP ingress from backend subnet"
 }
-
-
-/* # Frontend - Traffic sortant RTMP
-resource "aws_vpc_security_group_egress_rule" "frontend_allow_backend_rtmp" {
-  security_group_id = aws_security_group.front_sg.id
-  cidr_ipv4         = var.vpc_cidr_block[1]   # Accès vers l'IP privée du backend
-  from_port         = 1935
-  ip_protocol       = "tcp"
-  to_port           = 1935
-  description       = "Allow RTMP (video streaming) traffic to backend"
-}  */
-
-/* resource "aws_vpc_security_group_egress_rule" "frontend_allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.front_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
-} */
-
-
 
 # Create the security group for backend
 resource "aws_security_group" "backend_sg" {
@@ -230,43 +211,6 @@ resource "aws_vpc_security_group_egress_rule" "backend_to_frontend_rtmp" {
   description       = "Allow RTMP (video streaming) traffic from frontend"
 }
 
-
-
-
-/* resource "aws_vpc_security_group_egress_rule" "backend_allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.backend_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
-}
-
-
-# Frontend - Seulement HTTPS entrant ouvert au public
-resource "aws_vpc_security_group_ingress_rule" "frontend_allow_nginx_ssl" {
-  security_group_id = aws_security_group.front_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-}
-
-# Frontend - Seulement HTTPS sortant ouvert au public
-resource "aws_vpc_security_group_egress_rule" "frontend_allow_nginx_ssl" {
-  security_group_id = aws_security_group.front_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-} */
-
-# Backend -  HTTP entrant pour installation packages
-/* resource "aws_vpc_security_group_ingress_rule" "backend_allow_apt_ssl" {
-  security_group_id = aws_security_group.backend_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  ip_protocol       = "tcp"
-  to_port           = 80
-} */
-
 # Backend - HTTP sortant pour installation packages
 resource "aws_vpc_security_group_egress_rule" "backend_allow_apt_out_ssl" {
   security_group_id = aws_security_group.backend_sg.id
@@ -295,24 +239,9 @@ resource "tls_private_key" "podx_key" {
 
 resource "local_file" "private_key_pem" {
   content         = tls_private_key.podx_key.private_key_pem
-  filename        = "${path.module}/${var.key_name}.pem"
+  filename        = pathexpand("~/.ssh/${var.key_name}.pem")
   file_permission = "0600"
 }
-
-
-
-# Copy the key in the ~/.ssh/ folder
-resource "null_resource" "copy_ssh_key" {
-  provisioner "local-exec" {
-    command = "cp ${path.module}/${path.module}/${var.key_name}.pem ~/.ssh/${path.module}/${var.key_name}.pem && chmod 600 ~/.ssh/${path.module}/${var.key_name}.pem"
-  }
-
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-}
-
-
 
 resource "aws_key_pair" "podx_key_pair" {
   key_name   = var.key_name
@@ -344,10 +273,6 @@ resource "aws_route_table" "private" {
     nat_gateway_id = aws_nat_gateway.nat.id
   }
 
-  /* route {
-    cidr_block = var.vpc_cidr_block  # ex: "172.16.0.0/16"
-    gateway_id = "local"
-  } */
 }
 
 resource "aws_route_table_association" "private_assoc" {
@@ -392,7 +317,7 @@ resource "aws_instance" "back_ec2_instance" {
 
 resource "aws_route53_record" "guru3route" {
   zone_id = data.aws_route53_zone.fermat_route.id # Replace with your actual hosted zone ID
-  name    = "fermat-stream.${data.aws_route53_zone.fermat_route.name}"
+  name    = "${var.subdomain}.${data.aws_route53_zone.fermat_route.name}"
   type    = "A"
   ttl     = 300
   records = [aws_instance.front_ec2_instance.public_ip] # instance IP

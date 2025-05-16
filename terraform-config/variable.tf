@@ -77,9 +77,12 @@ variable "vpc_name" {
   
 }
 
-
-
 variable "vpc_cidr_block" { 
   type = string
   default = "172.16.0.0/16"
 } 
+
+variable "subdomain" {
+  type        = string
+  default     = "fermat-stream"
+}
