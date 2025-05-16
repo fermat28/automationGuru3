@@ -1,0 +1,71 @@
+- name: Setup video streamer backend
+  hosts: backend
+  become: yes
+  vars_files:
+    - vars/generic.yml
+  tasks:
+    - name: Install backend packages 
+      ansible.builtin.apt:
+        update_cache: yes
+        pkg:
+        - unzip 
+        - ffmpeg
+        state: present                        
+      become: true
+
+    - name: Create /videos directory
+      file:
+        path: /videos
+        state: directory
+        mode: '0755'
+    - name: Check if ZIP file already exists
+      stat:
+        path: /videos/bbb_sunflower_1080p_30fps_normal.mp4.zip
+      register: zip_file_check
+
+    - name: Download Big Buck Bunny video (if not already downloaded)
+      get_url:
+       url: https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip
+       dest: /videos/bbb_sunflower_1080p_30fps_normal.mp4.zip
+       mode: '0644'
+      when: not zip_file_check.stat.exists
+
+    - name: Unarchive the zip file
+      unarchive:
+        src: /videos/bbb_sunflower_1080p_30fps_normal.mp4.zip      # chemin du fichier zip sur la machine distante
+        dest: /videos/ 
+        mode: '0644'                                                        # dossier de destination
+        remote_src: yes                  # indique que le fichier est déjà sur la machine distante
+
+    - name: Create ffmpeg stream script
+      copy:
+        dest: /usr/local/bin/start-stream.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          ffmpeg -stream_loop -1 -re -i /videos/bbb_sunflower_1080p_30fps_normal.mp4 \
+            -c:v libx264 -preset veryfast -c:a aac -b:a 128k -ac 2 -ar 44100 \
+            -f flv rtmp://{{ rtmp_server_ip }}:1935/live/stream
+
+    - name: Create systemd service for ffmpeg stream
+      copy:
+        dest: /etc/systemd/system/ffmpeg-stream.service
+        content: |
+          [Unit]
+          Description=FFmpeg RTMP Stream Service
+          After=network.target
+
+          [Service]
+          ExecStart=/usr/local/bin/start-stream.sh
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd and enable ffmpeg service
+      systemd:
+        name: ffmpeg-stream
+        enabled: yes
+        daemon_reload: yes
+        state: restarted

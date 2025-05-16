@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Streaming - TELECOM Paris</title>
+
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/7.17.0/video-js.css" rel="stylesheet" />
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Custom Styles -->
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: #121212;
+      font-family: 'Inter', sans-serif;
+      color: #eaeaea;
+    }
+
+    header {
+      background: #1f1f1f;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    header h1 {
+      color: #fdf77d;
+      margin: 0;
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .video-js {
+      width: 100%;
+      height: 450px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 10px 0 20px;
+      font-size: 26px;
+      color: #ffffff;
+    }
+
+    .credits {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #bbbbbb;
+    }
+
+    .credits div {
+      width: 45%;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .credits {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+      .credits div {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TELECOM PARIS 2024 · GIN 208</h1>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Live Video Stream</h2>
+      <video
+        id="my-video"
+        class="video-js vjs-default-skin"
+        controls
+        preload="auto"
+        data-setup="{}"
+      >
+        <source src="/hls/stream.m3u8" type="application/vnd.apple.mpegurl" />
+        <p class="vjs-no-js">
+          Pour voir cette vidéo, activez JavaScript et utilisez un navigateur
+          <a href="https://videojs.com/html5-video-support/" target="_blank">compatible HTML5</a>.
+        </p>
+      </video>
+
+      <div class="credits">
+        <div>
+          <strong>Présenté par :</strong><br>
+          Automation Guru group 3
+        </div>
+        <div>
+          <strong>Sous la supervision de :</strong><br>
+          Jean-Louis Rougier<br>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2024 TELECOM Paris - Projet GIN 208
+  </footer>
+
+  <!-- Video.js JS -->
+  <script src="https://vjs.zencdn.net/7.17.0/video.js"></script>
+</body>
+</html>

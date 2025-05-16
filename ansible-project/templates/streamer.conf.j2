@@ -1,0 +1,46 @@
+server {
+    listen 80;
+    server_name {{ domain | default("_") }};
+
+    root /var/www/html/stream;
+
+    index index.html;
+
+    # Homepage
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Serve HLS content
+    location /hls {
+        add_header Access-Control-Allow-Origin *;
+        add_header Cache-Control no-cache;
+        root /var/www/html/stream;
+    }
+
+    # Serve DASH content
+    location /dash {
+        add_header Access-Control-Allow-Origin * always;
+        add_header Access-Control-Expose-Headers Content-Length;
+        add_header Cache-Control no-cache;
+        root /var/www/html/stream;
+    }
+
+    # CORS preflight
+    location ~* \.(mpd|m4s|m4v|m4a)$ {
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods "GET, OPTIONS";
+        add_header Access-Control-Allow-Headers "Range";
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Max-Age 1728000;
+            add_header Content-Type 'text/plain charset=UTF-8';
+            add_header Content-Length 0;
+            return 204;
+        }
+    }
+
+    types {
+        application/dash+xml mpd;
+        video/mp4 mp4;
+    }
+}

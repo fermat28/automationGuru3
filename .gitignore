@@ -1,0 +1,20 @@
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+crash.log
+
+# Ansible
+*.retry
+
+# System
+.DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Keys
+*.pem

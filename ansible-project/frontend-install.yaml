@@ -1,0 +1,80 @@
+---
+- name: Configure a new virtualhost
+  hosts: frontend
+  gather_facts: yes
+  become: true
+
+  vars_files:
+    - vars/generic.yml
+
+  vars:
+    main_server: true
+
+  tasks:
+    - name: Install Frontend packages      # Name of the task
+      ansible.builtin.apt:
+        update_cache: yes
+        pkg:
+        - nginx 
+        - ffmpeg
+        - libnginx-mod-rtmp 
+        state: present                        
+      become: true   
+ 
+    - name: Create www directory for your virtualhost
+      ansible.builtin.file:
+        path: /var/www/html/stream
+        state: directory
+        mode: '0775'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Créer dossiers hls et dash avec droits pour nginx
+      ansible.builtin.file:
+        path: "/var/www/html/stream/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      loop:
+        - hls
+        - dash
+
+
+    - name: Delete default nginx site configuration
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+
+    - name: Delete nginx configuration
+      ansible.builtin.template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart nginx    
+
+    - name: Deploy new site configuration
+      ansible.builtin.template:
+        src: templates/streamer.conf.j2
+        dest: /etc/nginx/sites-enabled/stream
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart nginx
+
+    - name: Deploy index.html as homepage
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: /var/www/html/stream/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+  handlers:
+    - name: restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
