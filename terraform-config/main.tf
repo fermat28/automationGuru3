@@ -184,7 +184,7 @@ resource "aws_vpc_security_group_egress_rule" "backend_allow_ssh_ipv4" {
  # Autoriser le backend à accéder au frontend via le port 1935
 resource "aws_vpc_security_group_egress_rule" "backend_to_frontend_rtmp" {
   security_group_id = aws_security_group.backend_sg.id
-  cidr_ipv4         = var.subnets_cidr_block[0]  # Accès depuis l'IP privée de l'instance frontend
+  cidr_ipv4         = var.subnets_cidr_block[0]
   from_port         = 1935
   ip_protocol       = "tcp"
   to_port           = 1935
@@ -296,10 +296,10 @@ resource "aws_instance" "back_ec2_instance" {
 # Domain attribution
 
 resource "aws_route53_record" "guru3route" {
-  zone_id = data.aws_route53_zone.fermat_route.id # Replace with your actual hosted zone ID
+  zone_id = data.aws_route53_zone.fermat_route.id
   name    = "${var.subdomain}.${data.aws_route53_zone.fermat_route.name}"
   type    = "A"
   ttl     = 300
-  records = [aws_instance.front_ec2_instance.public_ip] # instance IP
+  records = [aws_instance.front_ec2_instance.public_ip]
 }
 

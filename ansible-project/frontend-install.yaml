@@ -11,7 +11,7 @@
     main_server: true
 
   tasks:
-    - name: Install Frontend packages      # Name of the task
+    - name: Install Frontend packages
       ansible.builtin.apt:
         update_cache: yes
         pkg:
