@@ -124,26 +124,6 @@ resource "aws_vpc_security_group_egress_rule" "frontend_allow_apt_out_install" {
   to_port           = 80
 }
 
-
-# Frontend -  RTMP entrant 
-resource "aws_vpc_security_group_ingress_rule" "frontend_allow_apt_for_backend" {
-  security_group_id = aws_security_group.front_sg.id
-  cidr_ipv4         = var.subnets_cidr_block[1]
-  from_port         = 3128
-  ip_protocol       = "tcp"
-  to_port           = 3128
-}
-
-# Frontend -  RTMP sortant
-resource "aws_vpc_security_group_egress_rule" "frontend_allow_apt_for_backend" {
-  security_group_id = aws_security_group.front_sg.id
-  cidr_ipv4         = var.subnets_cidr_block[0]
-  from_port         = 3128
-  ip_protocol       = "tcp"
-  to_port           = 3128
-}
-
-
 # Frontend - SSH entrant Ouvert pour administration
 resource "aws_vpc_security_group_ingress_rule" "frontend_allow_ssh_ipv4" {
   security_group_id = aws_security_group.front_sg.id
