@@ -65,14 +65,6 @@
         mode: '0644'
       notify: restart nginx
 
-    - name: Deploy index.html as homepage
-      ansible.builtin.template:
-        src: templates/index.html.j2
-        dest: /var/www/html/stream/index.html
-        owner: www-data
-        group: www-data
-        mode: '0644'
-
   handlers:
     - name: restart nginx
       ansible.builtin.service:

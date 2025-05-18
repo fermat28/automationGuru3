@@ -16,6 +16,7 @@ cd ../ansible-project || { echo "Erreur : impossible d'accéder au dossier ansib
 
 echo "📦 Déploiement Ansible avec inventaire généré par Terraform..."
 ansible-playbook -i inventory.ini frontend-install.yaml || { echo "Erreur : échec du playbook frontend-install.yaml" >&2; exit 1; }
+ansible-playbook -i inventory.ini deploy-website.yaml || { echo "Erreur : échec du playbook deploy-website.yaml" >&2; exit 1; }
 ansible-playbook -i inventory.ini deploy-certificate.yml || { echo "Erreur : échec du playbook deploy-certificate.yml" >&2; exit 1; }
 ansible-playbook -i inventory.ini backend-install.yaml || { echo "Erreur : échec du playbook backend-install.yaml" >&2; exit 1; }
 

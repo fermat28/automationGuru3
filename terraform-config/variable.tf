@@ -84,5 +84,5 @@ variable "vpc_cidr_block" {
 
 variable "subdomain" {
   type        = string
-  default     = "fermat-stream"
+  default     = "bankai"
 }

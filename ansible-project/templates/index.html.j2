@@ -88,6 +88,28 @@
       text-align: center;
     }
 
+    /* Centrer le gros bouton play */
+    .video-js .vjs-big-play-button {
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+    }
+
+    /* Indicateur de saut de temps */
+    #indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: #fdf77d;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 9999;
+    }
+
     @media (max-width: 768px) {
       .credits {
         flex-direction: column;
@@ -128,12 +150,14 @@
           Automation Guru group 3
         </div>
         <div>
-          <strong>Sous la supervision de :</strong><br>
+          <strong>Sous la supervision de Boom :</strong><br>
           Jean-Louis Rougier<br>
         </div>
       </div>
     </div>
   </main>
+
+  <div id="indicator"></div>
 
   <footer>
     &copy; 2025 TELECOM Paris - Projet GIN 208
@@ -141,5 +165,31 @@
 
   <!-- Video.js JS -->
   <script src="https://vjs.zencdn.net/7.17.0/video.js"></script>
+
+  <!-- Clavier : avance/recul -->
+  <script>
+    const player = videojs('my-video');
+    const indicator = document.getElementById('indicator');
+
+    function showIndicator(text) {
+      indicator.textContent = text;
+      indicator.style.opacity = 1;
+      setTimeout(() => {
+        indicator.style.opacity = 0;
+      }, 600);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'ArrowRight') {
+        player.currentTime(player.currentTime() + 5);
+        showIndicator('+5s');
+      } else if (e.key === 'ArrowLeft') {
+        player.currentTime(player.currentTime() - 5);
+        showIndicator('-5s');
+      }
+    });
+  </script>
 </body>
 </html>

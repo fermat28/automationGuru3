@@ -1,0 +1,14 @@
+---
+- name: Configure frontend homepage
+  hosts: frontend
+  gather_facts: yes
+  become: true
+  tasks:
+
+    - name: Deploy index.html as homepage
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: /var/www/html/stream/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
