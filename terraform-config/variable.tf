@@ -1,34 +1,34 @@
-variable "region" { 
-  type = string 
-} 
-variable "subnets_cidr_block" { 
-  type = list(string)  
-} 
-variable "private_subnet_name" { 
-  type = string 
-} 
+variable "region" {
+  type = string
+}
+variable "subnets_cidr_block" {
+  type = list(string)
+}
+variable "private_subnet_name" {
+  type = string
+}
 
-variable "public_subnet_name" { 
-  type = string 
-} 
+variable "public_subnet_name" {
+  type = string
+}
 
-variable "gw_name" { 
-  type = string 
-} 
+variable "gw_name" {
+  type = string
+}
 
-variable "frontend_instance_name" { 
-  type = string 
+variable "frontend_instance_name" {
+  type    = string
   default = "fermat-frontend-vm"
-} 
+}
 
-variable "backend_instance_name" { 
-  type = string 
+variable "backend_instance_name" {
+  type    = string
   default = "fermat-backend-vm"
-} 
+}
 
 variable "key_name" {
-  type        = string
-  default     = "fermat-vm-key"
+  type    = string
+  default = "fermat-vm-key"
 }
 
 variable "rsa_bits" {
@@ -49,40 +49,61 @@ variable "back_security_group_name" {
   default     = "fermat-back-ssh-security-group"
 }
 
-variable "instance_type" { 
-  type = string 
+variable "instance_type" {
+  type    = string
   default = "t2.medium"
-} 
+}
 
-variable "algorithm" { 
-  type = string 
+variable "algorithm" {
+  type    = string
   default = "RSA"
-} 
+}
 
-variable "route_table_name" { 
-  type = string 
+variable "route_table_name" {
+  type    = string
   default = "fermat_public-route-table"
-} 
+}
 
 #DNS Settings
-variable "domain_name" { 
-  type = string 
+variable "domain_name" {
+  type    = string
   default = "devops.intuitivesoft.cloud"
-} 
+}
 
 
 variable "vpc_name" {
-  type = string
+  type    = string
   default = "fermat_streaming_vpc"
-  
+
 }
 
-variable "vpc_cidr_block" { 
-  type = string
+variable "vpc_cidr_block" {
+  type    = string
   default = "172.16.0.0/16"
-} 
+}
 
 variable "subdomain" {
-  type        = string
-  default     = "bankai"
+  type    = string
+  default = "shikai"
+}
+
+variable "http_port" { 
+  type = number
+  description = "HTTP port"
+  default = 80 
+}
+variable "https_port" { 
+  type = number
+  description = "HTTPS port"
+  default = 443
+}
+variable "ssh_port" { 
+  type = number
+  description = "SSH port"
+  default = 22
+}
+variable "rtmp_port" { 
+  type = number
+  description = "RTMP port"
+  default = 1935
 }

@@ -32,10 +32,10 @@
 
     - name: Unarchive the zip file
       unarchive:
-        src: /videos/bbb_sunflower_1080p_30fps_normal.mp4.zip      # chemin du fichier zip sur la machine distante
+        src: /videos/bbb_sunflower_1080p_30fps_normal.mp4.zip     
         dest: /videos/ 
-        mode: '0644'                                                        # dossier de destination
-        remote_src: yes                  # indique que le fichier est déjà sur la machine distante
+        mode: '0644'                                                      
+        remote_src: yes           
 
     - name: Create ffmpeg stream script
       copy:
